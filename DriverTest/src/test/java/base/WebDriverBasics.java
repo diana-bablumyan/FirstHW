@@ -30,7 +30,7 @@ public class WebDriverBasics{
         searchBtn.click();
         WebElement sortF = driver.findElement(By.xpath("//*[@id=\"mediumRefinements\"]/li[1]/div/button"));
         sortF.click();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         WebElement sortOp = driver.findElement(By.id("plp_web_sort_whats_new"));
         sortOp.click();
         WebElement colourF = driver.findElement(By.xpath("//*[@id=\"mediumRefinements\"]/li[8]/div/button"));

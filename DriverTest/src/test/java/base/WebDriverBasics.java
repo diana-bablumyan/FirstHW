@@ -4,10 +4,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
+import java.util.List;
 
 public class WebDriverBasics{
     public static WebDriver driver;
@@ -20,30 +22,36 @@ public class WebDriverBasics{
     }
 
     @Test
-    public void webDriverHelloWordTest(){
-        driver.get("https://www.asos.com/men/");
-        WebElement inputLink = driver.findElement(By.id("chrome-search"));
-        inputLink.click();
-        inputLink.sendKeys("T-Shirt");
+    public void checkCount(){
+        driver.get("http://automationpractice.com/index.php");
+        WebElement inputLink = driver.findElement(By.id("search_query_top"));
+        inputLink.sendKeys("dress");
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-        WebElement searchBtn = driver.findElement(By.cssSelector("#chrome-sticky-header > div._3wSz5e5 > div > div > div > form > div > button.kH5PAAC._1KRfEms"));
+        WebElement searchBtn = driver.findElement(By.name("submit_search"));
         searchBtn.click();
-        WebElement sortF = driver.findElement(By.xpath("//*[@id=\"mediumRefinements\"]/li[1]/div/button"));
-        sortF.click();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
-        WebElement sortOp = driver.findElement(By.id("plp_web_sort_whats_new"));
-        sortOp.click();
-        WebElement colourF = driver.findElement(By.xpath("//*[@id=\"mediumRefinements\"]/li[8]/div/button"));
-        colourF.click();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-        WebElement colourOp = driver.findElement(By.xpath("//*[@id=\"mediumRefinements\"]/li[8]/div/div/div/ul/li[3]/div/label/div[2]"));
-        colourOp.click();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
-        WebElement element = driver.findElement(By.xpath("//p[@data-auto-id=\"styleCount\"]"));
-        System.out.println("Shirt Count");
-        System.out.println(element.getText());
+        List<WebElement> listElement = driver.findElements(By.xpath("//li[contains(@class,\"ajax_block_product\")]"));
+        int count = listElement.size();
+        WebElement headingCount = driver.findElement(By.className("heading-counter"));
+        String text = headingCount.getText();
+        String subCount = text.substring(0,1);
+        Assert.assertEquals("7", subCount);
     }
 
+    @Test
+    public void loopForDress(){
+        driver.get("http://automationpractice.com/index.php");
+        WebElement inputLink = driver.findElement(By.id("search_query_top"));
+        inputLink.sendKeys("dress");
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
+        WebElement searchBtn = driver.findElement(By.name("submit_search"));
+        searchBtn.click();
+        List<WebElement> listElement = driver.findElements(By.xpath("//li[contains(@class,\"ajax_block_product\")]//div/div[2]/h5"));
+        for (WebElement i: listElement){
+            String text =  i.getText().toLowerCase();
+            System.out.println(text);
+            Assert.assertTrue(text.contains("dress"));
+        }
+    }
 
 //    @AfterClass
 //    public static void afterclass() {

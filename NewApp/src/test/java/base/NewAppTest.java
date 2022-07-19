@@ -1,16 +1,14 @@
 package base;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.time.Duration;
-import java.util.List;
 
 public class NewAppTest {
     public static WebDriver driver;
@@ -23,39 +21,44 @@ public class NewAppTest {
     }
 
     @Test
-    public void checkCount(){
-        driver.get("http://automationpractice.com/index.php");
-        WebElement inputLink = driver.findElement(By.id("search_query_top"));
-        inputLink.sendKeys("dress");
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-        WebElement searchBtn = driver.findElement(By.name("submit_search"));
-        searchBtn.click();
-        List<WebElement> listElement = driver.findElements(By.xpath("//li[contains(@class,\"ajax_block_product\")]"));
-        int count = listElement.size();
-        WebElement headingCount = driver.findElement(By.className("heading-counter"));
-        String text = headingCount.getText();
-        String subCount = text.substring(0,1);
-        Assert.assertEquals("7", subCount);
+    public void valid(){
+        driver.get("http://the-internet.herokuapp.com/login");
+        WebElement login = driver.findElement(By.id("username"));
+        login.sendKeys("tomsmith");
+        WebElement pass = driver.findElement(By.id("password"));
+        pass.sendKeys("SuperSecretPassword!");
+        WebElement submit = driver.findElement(By.className("fa-sign-in"));
+        submit.click();
+        WebElement message = driver.findElement(By.id("flash"));
+        String messageGet = message.getText();
+        Assert.assertTrue(messageGet.contains("You logged into a secure area!"));
     }
 
-    @Test
-    public void loopForDress(){
-        driver.get("http://automationpractice.com/index.php");
-        WebElement inputLink = driver.findElement(By.id("search_query_top"));
-        inputLink.sendKeys("dress");
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-        WebElement searchBtn = driver.findElement(By.name("submit_search"));
-        searchBtn.click();
-        List<WebElement> listElement = driver.findElements(By.xpath("//li[contains(@class,\"ajax_block_product\")]//div/div[2]/h5"));
-        for (WebElement i: listElement){
-            String text =  i.getText().toLowerCase();
-            System.out.println(text);
-            Assert.assertTrue(text.contains("dress"));
-        }
+    @DataProvider(name = "testData")
+    public Object [][] getData() {
+        Object[][] data = new Object[3][2];
+        data[0][0] = "tomsmith";  data[0][1] = "incorrect";
+        data[1][0] = "incorrect";  data[1][1] = "SuperSecretPassword!";
+        data[2][0] = "skhal";   data[2][1] = "chisht";
+        return data;
+    }
+    @Test (dataProvider = "testData")
+    public void invalid(String username, String password){
+        driver.get("http://the-internet.herokuapp.com/login");
+        WebElement login = driver.findElement(By.id("username"));
+        login.sendKeys(username);
+        WebElement pass = driver.findElement(By.id("password"));
+        pass.sendKeys(password);
+        WebElement submit = driver.findElement(By.className("fa-sign-in"));
+        submit.click();
+        WebElement message = driver.findElement(By.id("flash"));
+        String messageGet = message.getText();
+        System.out.println(messageGet);
+        Assert.assertTrue(messageGet.contains("invalid"));
     }
 
-    @AfterClass
-    public static void afterclass() {
-        driver.quit();
-    }
+//    @AfterClass
+//    public static void afterclass() {
+//        driver.quit();
+//    }
 }
